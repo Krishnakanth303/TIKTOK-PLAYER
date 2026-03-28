@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useCallback } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import VideoCard from './VideoCard';
 import styles from './VideoFeed.module.css';
 
@@ -6,36 +6,47 @@ export default function VideoFeed({ videos }) {
   const feedRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
-  // IntersectionObserver to detect which video is fully in view
+  // ✅ Detect active video using IntersectionObserver
   useEffect(() => {
     const feed = feedRef.current;
     if (!feed) return;
+
+    const cards = feed.querySelectorAll('[data-index]');
+    if (!cards.length) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
-            const index = parseInt(entry.target.dataset.index, 10);
+            const index = Number(entry.target.dataset.index);
             setActiveIndex(index);
           }
         });
       },
-      { threshold: 0.6, root: feed }
+      {
+        threshold: [0.6],
+        root: feed,
+      }
     );
 
-    const cards = feed.querySelectorAll('[data-index]');
     cards.forEach(card => observer.observe(card));
 
-    return () => observer.disconnect();
+    return () => {
+      cards.forEach(card => observer.unobserve(card));
+      observer.disconnect();
+    };
   }, [videos]);
 
-  // Keyboard navigation
+  // ✅ Keyboard navigation (Up / Down arrows)
   useEffect(() => {
+    const feed = feedRef.current;
+    if (!feed) return;
+
     const scrollToIndex = (index) => {
-      const feed = feedRef.current;
-      if (!feed) return;
       const card = feed.querySelector(`[data-index="${index}"]`);
-      if (card) card.scrollIntoView({ behavior: 'smooth' });
+      if (card) {
+        card.scrollIntoView({ behavior: 'smooth' });
+      }
     };
 
     const handleKey = (e) => {
@@ -46,7 +57,9 @@ export default function VideoFeed({ videos }) {
           scrollToIndex(next);
           return next;
         });
-      } else if (e.key === 'ArrowUp') {
+      }
+
+      if (e.key === 'ArrowUp') {
         e.preventDefault();
         setActiveIndex(prev => {
           const next = (prev - 1 + videos.length) % videos.length;

@@ -17,7 +17,8 @@ const NOTE_SETS = [
 
 export default function VideoCard({ video, isActive }) {
   const videoRef = useRef(null);
-  const { playing, progress, muted, showIcon, loading, togglePlay, toggleMute } = useVideoPlayer(videoRef, isActive);
+  const { playing, progress, muted, showIcon, loading, togglePlay, toggleMute } =
+    useVideoPlayer(videoRef, isActive);
 
   const audioCtxRef = useRef(null);
   const gainNodeRef = useRef(null);
@@ -30,10 +31,20 @@ export default function VideoCard({ video, isActive }) {
   const longPressRef = useRef(null);
   const [longPressed, setLongPressed] = useState(false);
 
+  // ✅ COMMENT SYSTEM STATE
+  const [comment, setComment] = useState("");
+  const [comments, setComments] = useState([]);
+
+  // ✅ ADD COMMENT FUNCTION
+  const addComment = () => {
+    if (!comment.trim()) return;
+    setComments((prev) => [...prev, comment]);
+    setComment("");
+  };
+
   // Start / stop generated lofi music
   useEffect(() => {
     if (isActive && playing) {
-      // Create AudioContext lazily (requires user gesture)
       if (!audioCtxRef.current) {
         try {
           audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
@@ -87,7 +98,6 @@ export default function VideoCard({ video, isActive }) {
     return () => clearInterval(intervalRef.current);
   }, [isActive, playing, video.id]);
 
-  // Sync mute → gain volume
   useEffect(() => {
     if (gainNodeRef.current && audioCtxRef.current) {
       gainNodeRef.current.gain.setValueAtTime(
@@ -110,8 +120,8 @@ export default function VideoCard({ video, isActive }) {
         togglePlay();
       } else if (tapCountRef.current >= 2) {
         const id = Date.now();
-        setHearts(prev => [...prev, { id, x, y }]);
-        setTimeout(() => setHearts(prev => prev.filter(h => h.id !== id)), 1000);
+        setHearts((prev) => [...prev, { id, x, y }]);
+        setTimeout(() => setHearts((prev) => prev.filter((h) => h.id !== id)), 1000);
       }
       tapCountRef.current = 0;
     }, 250);
@@ -119,9 +129,9 @@ export default function VideoCard({ video, isActive }) {
 
   const handlePressStart = useCallback(() => {
     longPressRef.current = setTimeout(() => {
-      const video = videoRef.current;
-      if (video && !video.paused) {
-        video.pause();
+      const videoEl = videoRef.current;
+      if (videoEl && !videoEl.paused) {
+        videoEl.pause();
         setLongPressed(true);
       }
     }, 500);
@@ -163,7 +173,7 @@ export default function VideoCard({ video, isActive }) {
       </div>
 
       <div className={styles.heartsLayer}>
-        {hearts.map(h => (
+        {hearts.map((h) => (
           <div key={h.id} className={styles.heart} style={{ left: h.x, top: h.y }}>
             ❤️
           </div>
@@ -176,11 +186,60 @@ export default function VideoCard({ video, isActive }) {
       <ActionBar video={video} />
       <UserInfo video={video} />
 
-      <button className={styles.soundBtn} onClick={toggleMute} title="Toggle Sound">
+      <button className={styles.soundBtn} onClick={toggleMute}>
         {muted ? '🔇' : '🔊'}
       </button>
 
       <MusicDisc avatar={video.user.avatar} playing={playing} />
+
+      {/* ✅ COMMENT BOX */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: "70px",
+          left: "10px",
+          right: "10px",
+          color: "white",
+        }}
+      >
+        <div style={{ maxHeight: "100px", overflowY: "auto" }}>
+          {comments.map((c, i) => (
+            <p key={i} style={{ fontSize: "12px", margin: "2px 0" }}>
+              💬 {c}
+            </p>
+          ))}
+        </div>
+
+        <div style={{ display: "flex", marginTop: "5px" }}>
+          <input
+            type="text"
+            placeholder="Add a comment..."
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            style={{
+              flex: 1,
+              padding: "5px",
+              borderRadius: "5px",
+              border: "none",
+            }}
+          />
+
+          <button
+            onClick={addComment}
+            style={{
+              marginLeft: "5px",
+              padding: "5px 10px",
+              borderRadius: "5px",
+              background: "#ff2c55",
+              color: "white",
+              border: "none",
+            }}
+          >
+            Post
+          </button>
+        </div>
+      </div>
+
       <ProgressBar progress={progress} />
     </div>
   );
