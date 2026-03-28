@@ -55,6 +55,12 @@ public/
 | IntersectionObserver | Efficient viewport detection |
 | scroll-snap-type | Native smooth snapping |
 
+## 🎥 Demo Video
+
+Click below to watch the working demo of the TikTok Video Player:
+
+👉 [Watch Demo](https://drive.google.com/file/d/1iKlw7YNXCsn2gTwOeRh93AGwrmxmSg8O/view?usp=drive_link)
+
 ## ⚠️ Known Limitations
 
 - Videos start muted for autoplay (browser policy). Click 🔊 to hear music.
