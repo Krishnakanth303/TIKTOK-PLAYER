@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback } from 'react';
+import { useRef, useState, useCallback, useEffect } from 'react';
 import { useVideoPlayer } from '../hooks/useVideoPlayer';
 import ActionBar from './ActionBar';
 import UserInfo from './UserInfo';
@@ -11,25 +11,47 @@ export default function VideoCard({ video, isActive }) {
   const { playing, progress, muted, showIcon, loading, togglePlay, toggleMute } =
     useVideoPlayer(videoRef, isActive);
 
+  // 🎯 COMMENTS
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
 
   const addComment = (e) => {
     e.stopPropagation();
     if (!comment.trim()) return;
-    setComments((prev) => [...prev, comment]);
+    setComments(prev => [...prev, comment]);
     setComment("");
   };
 
-  const handleTap = useCallback(() => {
+  // 🎯 SIMPLE SOUND FIX (no oscillator complexity)
+  useEffect(() => {
+    if (!isActive) return;
+
+    const audio = new Audio('/click.mp3'); // small sound file (optional)
+    audio.volume = muted ? 0 : 0.3;
+
+    if (playing) {
+      audio.play().catch(() => {});
+    }
+
+    return () => audio.pause();
+  }, [playing, muted, isActive]);
+
+  // Sync video muted property with React state
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = muted;
+    }
+  }, [muted]);
+
+  const handleTap = useCallback((e) => {
+    // ❗ Ignore clicks inside comment box
+    if (e.target.closest(".comment-box-area")) return;
+    
     togglePlay();
   }, [togglePlay]);
 
   return (
-    <div
-      className={styles.card}
-      onClick={handleTap}
-    >
+    <div className={styles.card} onClick={handleTap}>
       {loading && <div className={styles.skeleton} />}
 
       <video
@@ -37,11 +59,10 @@ export default function VideoCard({ video, isActive }) {
         className={styles.video}
         src={video.url}
         loop
-        muted
+        muted={muted}
         playsInline
       />
 
-      {/* 🔥 tap layer (no blocking now) */}
       <div className={styles.tapArea} />
 
       <div className={`${styles.playIcon} ${showIcon ? styles.visible : ''}`}>
@@ -63,34 +84,36 @@ export default function VideoCard({ video, isActive }) {
 
       <MusicDisc avatar={video.user.avatar} playing={playing} />
 
-      {/* 🔥 FIXED COMMENT BOX */}
+      {/* 🔥 COMMENT BOX */}
       <div
-        onClick={(e) => e.stopPropagation()}
+        className="comment-box-area"
         style={{
           position: "absolute",
           bottom: "80px",
           left: "10px",
           right: "10px",
-          zIndex: 9999,              // 🔥 HIGH PRIORITY
-          pointerEvents: "auto",     // 🔥 ENABLE INPUT
+          zIndex: 9999,
+          pointerEvents: "auto",
           color: "white"
         }}
+        onMouseDown={(e) => e.stopPropagation()}
+        onTouchStart={(e) => e.stopPropagation()}
       >
         <div style={{ maxHeight: "100px", overflowY: "auto" }}>
           {comments.map((c, i) => (
-            <p key={i} style={{ fontSize: "12px", margin: "2px 0" }}>
-              💬 {c}
-            </p>
+            <p key={i} style={{ fontSize: "12px" }}>💬 {c}</p>
           ))}
         </div>
 
-        <div style={{ display: "flex", marginTop: "5px" }}>
+        <div style={{ display: "flex", marginTop: "5px" }} onClick={(e) => e.stopPropagation()}>
           <input
             type="text"
             placeholder="Add comment..."
             value={comment}
             onChange={(e) => setComment(e.target.value)}
-            onClick={(e) => e.stopPropagation()} // 🔥 IMPORTANT
+            onMouseDown={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
             style={{
               flex: 1,
               padding: "6px",
@@ -100,7 +123,11 @@ export default function VideoCard({ video, isActive }) {
           />
 
           <button
-            onClick={addComment}
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              addComment(e);
+            }}
             style={{
               marginLeft: "5px",
               padding: "6px 10px",

@@ -47,18 +47,18 @@ export function useVideoPlayer(videoRef, isActive) {
     if (!video) return;
 
     if (isActive) {
-      // Must start muted for autoplay, then unmute after play starts
+      // Must start muted for autoplay, then try to play
       video.muted = true;
       const timer = setTimeout(() => {
         video.play()
           .then(() => {
-            // Unmute after autoplay succeeds
-            video.muted = false;
-            setMuted(false);
+            // Autoplay succeeded - video is now playing
             setPlaying(true);
+            // Keep it muted initially, user can unmute with button
+            setMuted(true);
           })
           .catch(() => {
-            // Autoplay blocked even muted - keep muted and try again
+            // Autoplay blocked - keep muted
             video.muted = true;
             setMuted(true);
           });
@@ -91,10 +91,10 @@ export function useVideoPlayer(videoRef, isActive) {
   const toggleMute = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
-    const newMuted = !video.muted;
+    const newMuted = !muted;
     video.muted = newMuted;
     setMuted(newMuted);
-  }, [videoRef]);
+  }, [videoRef, muted]);
 
   return { playing, progress, muted, showIcon, loading, togglePlay, toggleMute };
 }
