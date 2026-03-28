@@ -1,0 +1,120 @@
+.card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tapArea {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  cursor: pointer;
+}
+
+.playIcon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.7);
+  z-index: 15;
+  font-size: 60px;
+  opacity: 0;
+  pointer-events: none;
+  transition: none;
+}
+
+.playIcon.visible {
+  animation: iconPop 0.9s ease forwards;
+}
+
+@keyframes iconPop {
+  0%   { opacity: 0.9; transform: translate(-50%, -50%) scale(1.1); }
+  50%  { opacity: 0.9; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0;   transform: translate(-50%, -50%) scale(0.85); }
+}
+
+.heartsLayer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.heart {
+  position: absolute;
+  font-size: 72px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  animation: floatHeart 1s ease forwards;
+}
+
+@keyframes floatHeart {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.2); }
+  20%  { opacity: 1; transform: translate(-50%, -65%) scale(1.4); }
+  70%  { opacity: 0.9; transform: translate(-50%, -130%) scale(1.1); }
+  100% { opacity: 0; transform: translate(-50%, -180%) scale(0.9); }
+}
+
+.gradientTop {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 130px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);
+  pointer-events: none;
+  z-index: 4;
+}
+
+.gradientBottom {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 300px;
+  background: linear-gradient(to top, rgba(0,0,0,0.75), transparent);
+  pointer-events: none;
+  z-index: 4;
+}
+
+.soundBtn {
+  position: absolute;
+  top: 16px;
+  right: 14px;
+  z-index: 15;
+  font-size: 20px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s;
+}
+
+.soundBtn:active { transform: scale(0.88); }
+
+.skeleton {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  background: linear-gradient(90deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

@@ -1,0 +1,81 @@
+.bar {
+  position: absolute;
+  right: 12px;
+  bottom: 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  z-index: 10;
+}
+
+.avatarWrap {
+  position: relative;
+  width: 48px;
+  margin-bottom: 4px;
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  object-fit: cover;
+  display: block;
+}
+
+.followBtn {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fe2c55;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: background 0.2s;
+}
+
+.followBtn.following {
+  background: #555;
+}
+
+.action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transition: transform 0.15s;
+}
+
+.action:active { transform: scale(0.85); }
+
+.icon {
+  font-size: 30px;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
+}
+
+.count {
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.7);
+}
+
+.pop .icon {
+  animation: popHeart 0.35s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+@keyframes popHeart {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.6); }
+  70%  { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}

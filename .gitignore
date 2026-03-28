@@ -1,0 +1,12 @@
+node_modules
+dist
+public/videos
+
+.env
+.env.*
+
+.vscode
+.idea
+
+.DS_Store
+*.local

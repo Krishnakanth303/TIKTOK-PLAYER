@@ -1,0 +1,54 @@
+.info {
+  position: absolute;
+  bottom: 80px;
+  left: 14px;
+  right: 80px;
+  z-index: 10;
+}
+
+.username {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.8);
+}
+
+.desc {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: rgba(255,255,255,0.92);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-shadow: 0 1px 5px rgba(0,0,0,0.7);
+}
+
+.desc.expanded {
+  display: block;
+  overflow: visible;
+}
+
+.more {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.65);
+  margin-top: 2px;
+}
+
+.music {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.85);
+}
+
+.musicText {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 190px;
+  font-style: italic;
+}
