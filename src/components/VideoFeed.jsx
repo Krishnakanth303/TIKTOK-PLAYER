@@ -73,11 +73,29 @@ export default function VideoFeed({ videos }) {
     return () => window.removeEventListener('keydown', handleKey);
   }, [videos.length]);
 
+  // Comment section state
+  const [openCommentIdx, setOpenCommentIdx] = useState(null);
+  const [videoComments, setVideoComments] = useState(videos.map(() => []));
+
+  const handleCommentClick = idx => setOpenCommentIdx(idx);
+  const handleCloseComments = () => setOpenCommentIdx(null);
+  const handleUpdateComments = (idx, comments) => {
+    setVideoComments(prev => prev.map((c, i) => (i === idx ? comments : c)));
+  };
+
   return (
     <div className={styles.feed} ref={feedRef}>
       {videos.map((video, i) => (
         <div key={video.id} className={styles.slide} data-index={i}>
-          <VideoCard video={video} isActive={i === activeIndex} />
+          <VideoCard
+            video={video}
+            isActive={i === activeIndex}
+            comments={videoComments[i]}
+            setComments={comments => handleUpdateComments(i, comments)}
+            showComments={openCommentIdx === i}
+            onCommentClick={() => handleCommentClick(i)}
+            onCloseComments={handleCloseComments}
+          />
         </div>
       ))}
     </div>

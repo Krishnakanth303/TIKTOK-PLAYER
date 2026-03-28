@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback, useEffect } from 'react';
+import { useRef, useState } from 'react';
 import { useVideoPlayer } from '../hooks/useVideoPlayer';
 import ActionBar from './ActionBar';
 import UserInfo from './UserInfo';
@@ -11,44 +11,21 @@ export default function VideoCard({ video, isActive }) {
   const { playing, progress, muted, showIcon, loading, togglePlay, toggleMute } =
     useVideoPlayer(videoRef, isActive);
 
-  // 🎯 COMMENTS
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
 
-  const addComment = (e) => {
-    e.stopPropagation();
-    if (!comment.trim()) return;
-    setComments(prev => [...prev, comment]);
-    setComment("");
+  const handleTap = (e) => {
+    const tag = e.target.tagName.toLowerCase();
+    if (tag === "input" || tag === "button") return;
+    togglePlay();
   };
 
-  // 🎯 SIMPLE SOUND FIX (no oscillator complexity)
-  useEffect(() => {
-    if (!isActive) return;
-
-    const audio = new Audio('/click.mp3'); // small sound file (optional)
-    audio.volume = muted ? 0 : 0.3;
-
-    if (playing) {
-      audio.play().catch(() => {});
-    }
-
-    return () => audio.pause();
-  }, [playing, muted, isActive]);
-
-  // Sync video muted property with React state
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.muted = muted;
-    }
-  }, [muted]);
-
-  const handleTap = useCallback((e) => {
-    // ❗ Ignore clicks inside comment box
-    if (e.target.closest(".comment-box-area")) return;
-    
-    togglePlay();
-  }, [togglePlay]);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!comment.trim()) return;
+    setComments([...comments, comment]);
+    setComment("");
+  };
 
   return (
     <div className={styles.card} onClick={handleTap}>
@@ -84,63 +61,35 @@ export default function VideoCard({ video, isActive }) {
 
       <MusicDisc avatar={video.user.avatar} playing={playing} />
 
-      {/* 🔥 COMMENT BOX */}
+      {/* COMMENT BOX */}
       <div
-        className="comment-box-area"
         style={{
           position: "absolute",
           bottom: "80px",
           left: "10px",
           right: "10px",
           zIndex: 9999,
-          pointerEvents: "auto",
-          color: "white"
+          background: "rgba(0,0,0,0.6)",
+          padding: "10px",
+          borderRadius: "10px"
         }}
-        onMouseDown={(e) => e.stopPropagation()}
-        onTouchStart={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
       >
         <div style={{ maxHeight: "100px", overflowY: "auto" }}>
           {comments.map((c, i) => (
-            <p key={i} style={{ fontSize: "12px" }}>💬 {c}</p>
+            <p key={i}>💬 {c}</p>
           ))}
         </div>
 
-        <div style={{ display: "flex", marginTop: "5px" }} onClick={(e) => e.stopPropagation()}>
+        <form onSubmit={handleSubmit} style={{ display: "flex" }}>
           <input
-            type="text"
-            placeholder="Add comment..."
             value={comment}
             onChange={(e) => setComment(e.target.value)}
-            onMouseDown={(e) => e.stopPropagation()}
-            onTouchStart={(e) => e.stopPropagation()}
-            onKeyDown={(e) => e.stopPropagation()}
-            style={{
-              flex: 1,
-              padding: "6px",
-              borderRadius: "5px",
-              border: "none"
-            }}
+            placeholder="Add comment..."
+            style={{ flex: 1, padding: "5px" }}
           />
-
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              addComment(e);
-            }}
-            style={{
-              marginLeft: "5px",
-              padding: "6px 10px",
-              background: "#ff2c55",
-              color: "white",
-              border: "none",
-              borderRadius: "5px",
-              cursor: "pointer"
-            }}
-          >
-            Post
-          </button>
-        </div>
+          <button type="submit">Post</button>
+        </form>
       </div>
 
       <ProgressBar progress={progress} />

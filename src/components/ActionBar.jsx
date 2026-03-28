@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import styles from './ActionBar.module.css';
 
-export default function ActionBar({ video }) {
+export default function ActionBar({ video, onCommentClick }) {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(video.likes); // starts at 0
   const [bookmarked, setBookmarked] = useState(false);
@@ -19,30 +19,38 @@ export default function ActionBar({ video }) {
   return (
     <div className={styles.bar}>
       {/* Avatar + follow */}
+
       <div className={styles.avatarWrap}>
         <img src={video.user.avatar} alt={video.user.name} className={styles.avatar} />
         <button
           className={`${styles.followBtn} ${followed ? styles.following : ''}`}
-          onClick={() => setFollowed(p => !p)}
+          onClick={e => {
+            e.stopPropagation();
+            setFollowed(p => !p);
+          }}
         >
           {followed ? '✓' : '+'}
         </button>
       </div>
 
       {/* Like */}
-      <button className={`${styles.action} ${likeAnim ? styles.pop : ''}`} onClick={handleLike}>
+
+      <button className={`${styles.action} ${likeAnim ? styles.pop : ''}`} onClick={e => { e.stopPropagation(); handleLike(); }}>
         <span className={styles.icon}>{liked ? '❤️' : '🤍'}</span>
         <span className={styles.count}>{likeCount}</span>
       </button>
 
       {/* Comment */}
-      <button className={styles.action}>
+
+      <button className={styles.action} onClick={e => { e.stopPropagation(); if (onCommentClick) onCommentClick(); }}>
         <span className={styles.icon}>💬</span>
         <span className={styles.count}>{video.comments}</span>
       </button>
 
       {/* Bookmark */}
-      <button className={styles.action} onClick={() => {
+
+      <button className={styles.action} onClick={e => {
+        e.stopPropagation();
         setBookmarked(p => !p);
         setBookmarkCount(p => bookmarked ? p - 1 : p + 1);
       }}>
@@ -51,7 +59,8 @@ export default function ActionBar({ video }) {
       </button>
 
       {/* Share */}
-      <button className={styles.action}>
+
+      <button className={styles.action} onClick={e => e.stopPropagation()}>
         <span className={styles.icon}>↗️</span>
         <span className={styles.count}>{video.shares}</span>
       </button>
