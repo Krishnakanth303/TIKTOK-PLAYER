@@ -16,11 +16,12 @@
   object-fit: cover;
 }
 
+/* 🔥 FIXED */
 .tapArea {
   position: absolute;
   inset: 0;
   z-index: 5;
-  cursor: pointer;
+  pointer-events: none; /* IMPORTANT */
 }
 
 .playIcon {
@@ -32,7 +33,6 @@
   font-size: 60px;
   opacity: 0;
   pointer-events: none;
-  transition: none;
 }
 
 .playIcon.visible {
@@ -42,7 +42,7 @@
 @keyframes iconPop {
   0%   { opacity: 0.9; transform: translate(-50%, -50%) scale(1.1); }
   50%  { opacity: 0.9; transform: translate(-50%, -50%) scale(1); }
-  100% { opacity: 0;   transform: translate(-50%, -50%) scale(0.85); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.85); }
 }
 
 .heartsLayer {
@@ -100,10 +100,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.15s;
 }
-
-.soundBtn:active { transform: scale(0.88); }
 
 .skeleton {
   position: absolute;
